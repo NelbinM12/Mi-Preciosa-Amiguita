@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Fresita Preciosa 🍓</title>
+  <!-- Si quieres 100% offline, descarga esta fuente y enlázala localmente -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Press Start 2P', cursive;
+      background: linear-gradient(135deg, #ff69b4, #8a2be2);
+      color: #fff;
+      text-align: center;
+      overflow: hidden;
+    }
+    header {
+      background: rgba(0,0,0,0.7);
+      padding: 20px;
+      border-bottom: 4px solid #ffd700;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    h1 { margin: 0; font-size: 24px; color: #ffd700; }
+    p { font-size: 14px; margin: 10px 0; }
+
+    /* Fresitas (estrellas) */
+    .estrella {
+      display: inline-block;
+      font-size: 40px;
+      margin: 12px;
+      cursor: pointer;
+      transition: transform 0.3s;
+      animation: twinkle 2s infinite alternate;
+      user-select: none;
+    }
+    .estrella:hover { transform: scale(1.25); }
+    @keyframes twinkle {
+      from { opacity: 0.7; transform: scale(1); }
+      to { opacity: 1; transform: scale(1.15); }
+    }
+
+    #mensaje { margin-top: 20px; font-size: 16px; color: #ffecff; min-height: 24px; }
+    #foto {
+      display: none; max-width: 320px; border-radius: 16px; margin: 16px auto 0;
+      opacity: 0; border: 4px solid #ffd700;
+      box-shadow: 0 0 25px rgba(255, 105, 180, 0.7);
+      animation: fadeIn 1.2s forwards;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(16px);} to { opacity: 1; transform: translateY(0);} }
+
+    #final { margin-top: 32px; font-size: 16px; color: #ffd700; display: none; animation: fadeIn 1.2s forwards; }
+    #final img { max-width: 340px; border-radius: 20px; margin-top: 16px; border: 4px solid #ff69b4; box-shadow: 0 0 20px rgba(255, 105, 180, 0.7); }
+
+    #corazones {
+      position: fixed; top: 10px; right: 20px; font-size: 14px; color: #ffd700;
+      background: rgba(0,0,0,0.4); padding: 6px 12px; border-radius: 12px; z-index: 3;
+    }
+
+    /* Fresitas flotantes */
+    .fresita {
+      position: fixed; bottom: -40px; font-size: 24px; animation: subir 6s linear forwards; z-index: 1; pointer-events: none;
+    }
+    @keyframes subir { from { transform: translateY(0); opacity: 1;} to { transform: translateY(-100vh); opacity: 0;} }
+
+    /* Chat lateral */
+    #chat {
+      position: fixed; top: 80px; right: 0; width: 300px; height: 80%;
+      background: rgba(0,0,0,0.6); border-left: 4px solid #ffd700;
+      box-shadow: -4px 0 12px rgba(0,0,0,0.4); padding: 10px;
+      display: flex; flex-direction: column; z-index: 2;
+    }
+    #chat h2 { font-size: 14px; color: #ffd700; margin: 0 0 10px 0; }
+    #mensajes { flex: 1; overflow-y: auto; font-size: 12px; text-align: left; color: #fff; margin-bottom: 10px; padding-right: 6px; }
+    .msg { margin-bottom: 8px; line-height: 1.4; word-break: break-word; }
+    .usuario { color: #ffd700; }
+    #inputChat { flex: 1; padding: 6px; font-size: 12px; border-radius: 6px; border: none; }
+    #btnEnviar { width: 60px; padding: 6px; font-size: 12px; background: #ffd700; color: #000; border: none; border-radius: 6px; cursor: pointer; }
+
+    /* Layout para que no quede debajo del chat */
+    #contenedorEstrellas {
+      margin-right: 320px; margin-top: 16px; display: flex; flex-wrap: wrap; justify-content: center;
+    }
+
+    /* Carta virtual */
+    #carta {
+      display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8);
+      width: 420px; max-width: 90vw; background: #fff; color: #000; padding: 20px; border-radius: 12px;
+      box-shadow: 0 0 25px rgba(255,105,180,0.8); z-index: 5; animation: abrirCarta 0.8s forwards;
+      font-family: 'Arial', sans-serif; text-align: left;
+    }
+    @keyframes abrirCarta { from { opacity: 0; transform: translate(-50%, -50%) scale(0.5);} to { opacity: 1; transform: translate(-50%, -50%) scale(1);} }
+    #carta h3 { margin-top: 0; color: #8a2be2; }
+    #cerrarCarta { display: block; margin-top: 12px; text-align: center; background: #ff69b4; color: #fff; padding: 8px; border-radius: 8px; cursor: pointer; }
+
+    /* Overlay semitransparente detrás de la carta */
+    #overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 4;
+      backdrop-filter: blur(2px);
+    }
+
+    /* Contenedor para video dinámico */
+    #videoContainer video {
+      max-width: 320px;
+      border-radius: 16px;
+      margin: 16px auto 0;
+      border: 4px solid #ffd700;
+      box-shadow: 0 0 25px rgba(255, 105, 180, 0.7);
+      animation: fadeIn 1.2s forwards;
+      display: block;
+    }
+
+    /* Responsive básico */
+    @media (max-width: 768px) {
+      #chat { width: 260px; }
+      #contenedorEstrellas { margin-right: 280px; }
+      .estrella { font-size: 36px; margin: 10px; }
+      #final img, #foto { max-width: 90vw; }
+      #videoContainer video { max-width: 90vw; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🍓 Nuestro Universo Renovado 🍓</h1>
+    <p>Un Universo inspirado en AriGameplays</p>
+  </header>
+
+  <!-- Contador de corazones -->
+  <div id="corazones">❤️ 0</div>
+
+  <!-- Contenedor de fresitas -->
+  <div id="contenedorEstrellas"></div>
+
+  <!-- Mensaje, imagen y contenedor de video -->
+  <div id="mensaje"></div>
+  <img id="foto" src="" alt="Foto fresita">
+  <div id="videoContainer"></div>
+
+  <!-- Mensaje final -->
+  <div id="final">
+    <p>Gracias por ser la fresa más especial <br>
+      que hay en mi universo 💖🍓✨</p>
+    <img src="final.jpg" alt="Foto final">
+  </div>
+
+  <!-- Chat lateral -->
+  <div id="chat">
+    <h2>💬 Chat de Viewers</h2>
+    <div id="mensajes"></div>
+    <div style="display:flex; gap:6px; align-items:center;">
+      <input type="text" id="inputChat" placeholder="Escribe tu mensaje...">
+      <button id="btnEnviar">Enviar</button>
+    </div>
+  </div>
+
+  <!-- Overlay + Carta virtual -->
+  <div id="overlay"></div>
+  <div id="carta">
+    <h3>💌 Carta Virtual</h3>
+    <p>
+      Querida Fresita Preciosa 💖<br><br>
+      Gracias por acompañarme en este universo lleno de colores, risas y momentos únicos.
+      Cada recuerdo contigo es como una fresa dulce que ilumina mi día. Este pequeño universo es
+      solo un reflejo de lo especial que eres para mí.<br><br>
+      Tu amistad me inspira a seguir creando, a nunca rendirme y a llenar cada rincón de alegría.
+      Eres esa chispa que convierte lo cotidiano en extraordinario, y cada palabra tuya es como un abrazo
+      que me da fuerzas.<br><br>
+      Espero que esta carta sea un recordatorio de cuánto significas en mi vida. Que cada fresita aquí
+      sea un símbolo de cariño, de gratitud y de los sueños que compartimos. Pase lo que pase, siempre
+      tendrás un lugar en mi corazón, y cada proyecto que hago lleva un pedacito de ti.<br><br>
+      Te Amo mucho Fresita Preciosa 💖<br>
+      <br>Con todo mi cariño,<br>
+      Tu amiguito 🍓✨
+    </p>
+    <div id="cerrarCarta">Cerrar carta</div>
+  </div>
+
+  <script>
+    // ===== Datos: fresitas + escritos (10 imágenes y 1 video) =====
+    const estrellas = [
+      {texto: "Tu risa es más dulce que una fresa 🍓", imagen: "fresa1.jpg"},
+      {texto: "Ese día fue como un batido de fresas ✨", imagen: "fresa2.jpg"},
+      {texto: "Nuestra amistad florece como fresas en verano 💖", imagen: "fresa3.jpg"},
+      {texto: "Cada recuerdo contigo es como un campo de fresas 🌸", imagen: "fresa4.jpg"},
+      {texto: "Tus palabras son como fresas con crema 🍨", imagen: "fresa5.jpg"},
+      {texto: "Un día contigo = un festival de fresas 🎉", imagen: "fresa6.jpg"},
+      {texto: "Tu energía ilumina como fresas bajo el sol ☀️", video: "fresa7.mp4"}, // Fresa #7 es video
+      {texto: "Nuestra historia es un jardín de fresas 🌱", imagen: "fresa8.jpg"},
+      {texto: "Eres la fresa que da sabor a mi universo 🌌", imagen: "fresa9.jpg"},
+      {texto: "Siempre serás mi fresita especial 💎🍓", imagen: "fresa10.jpg"},
+      {final: true},   // Mensaje final
+      {carta: true}    // Abre la carta virtual
+    ];
+
+    // Respuestas del chat (viewers)
+    const respuestasViewer = [
+      "🍓 ¡Qué bonitos!",
+      "✨ Ari estaría orgullosa",
+      "💖 Una fresita muy preciosa eres",
+      "🔥 Esto parece un stream real",
+      "🌟 Me encanta este universo",
+      "😂 Jajaja, muy bueno",
+      "🎮 GG, qué buen detalle",
+      "🫶 Qué amistad tan linda",
+      "👀 Quiero ver más fotos"
+    ];
+
+    let corazones = 0;
+
+    // ===== UI: mostrar mensaje con imagen o video =====
+    function mostrarMensaje(texto, recurso) {
+      const mensajeEl = document.getElementById('mensaje');
+      const foto = document.getElementById('foto');
+      const finalEl = document.getElementById('final');
+      const videoContainer = document.getElementById('videoContainer');
+      if (!mensajeEl || !foto || !finalEl || !videoContainer) return;
+
+      // Reset visual
+      mensajeEl.innerText = texto || "";
+      finalEl.style.display = 'none';
+
+      // Limpiar video previo si existiera
+      videoContainer.innerHTML = "";
+
+      // Decidir si es imagen o video
+      const esVideo = typeof recurso === 'string' && recurso.toLowerCase().endsWith('.mp4');
+
+      if (esVideo) {
+        // Ocultar imagen
+        foto.style.display = 'none';
+        foto.removeAttribute('src');
+
+        // Crear video
+        const videoEl = document.createElement('video');
+        videoEl.src = recurso;
+        videoEl.controls = true;
+        videoEl.autoplay = true;    // en móviles puede requerir muted
+        videoEl.muted = true;       // mejora autoplay en móvil; puedes quitarlo si no necesitas autoplay
+        videoEl.playsInline = true; // iOS inline
+        videoContainer.appendChild(videoEl);
+      } else {
+        // Mostrar imagen
+        videoContainer.innerHTML = ""; // asegurar vacío
+        foto.src = recurso || '';
+        foto.style.display = recurso ? 'block' : 'none';
+        foto.style.opacity = '0';
+        foto.style.animation = 'fadeIn 1.2s forwards';
+      }
+
+      sumarCorazon();
+      lanzarFresita();
+      lanzarViewerMensaje(); // reacción automática del chat
+    }
+
+    function mostrarFinal() {
+      const mensajeEl = document.getElementById('mensaje');
+      const foto = document.getElementById('foto');
+      const finalEl = document.getElementById('final');
+      const videoContainer = document.getElementById('videoContainer');
+      if (!mensajeEl || !foto || !finalEl || !videoContainer) return;
+
+      // Limpiar contenidos
+      mensajeEl.innerText = '';
+      foto.style.display = 'none';
+      foto.removeAttribute('src');
+      videoContainer.innerHTML = '';
+
+      // Mostrar final
+      finalEl.style.display = 'block';
+
+      sumarCorazon();
+      lanzarFresita();
+      lanzarViewerMensaje();
+    }
+
+    // ===== Carta virtual (abrir/cerrar) =====
+    function abrirCarta() {
+      const overlay = document.getElementById('overlay');
+      const carta = document.getElementById('carta');
+      if (!overlay || !carta) return;
+      overlay.style.display = 'block';
+      carta.style.display = 'block';
+    }
+    function cerrarCarta() {
+      const overlay = document.getElementById('overlay');
+      const carta = document.getElementById('carta');
+      if (!overlay || !carta) return;
+      overlay.style.display = 'none';
+      carta.style.display = 'none';
+    }
+
+    function sumarCorazon() {
+      corazones++;
+      const c = document.getElementById('corazones');
+      if (c) c.innerText = "❤️ " + corazones;
+    }
+
+    // ===== Fresitas flotantes =====
+    function lanzarFresita() {
+      const f = document.createElement("div");
+      f.className = "fresita";
+      f.innerText = "🍓";
+      f.style.left = Math.random() * window.innerWidth + "px";
+      document.body.appendChild(f);
+      setTimeout(() => f.remove(), 6000);
+    }
+
+    // ===== Crear fresitas dinámicamente =====
+    const contenedor = document.getElementById('contenedorEstrellas');
+    if (contenedor) {
+      estrellas.forEach(e => {
+        const div = document.createElement("div");
+        div.className = "estrella";
+        div.setAttribute('role', 'button');
+        div.setAttribute('aria-label', e.final ? 'Mensaje final' : (e.carta ? 'Abrir carta virtual' : 'Mostrar fresita'));
+        div.innerText = e.carta ? "💌" : "🍓"; // icono distinto para la carta
+
+        if (e.final) {
+          div.onclick = mostrarFinal;
+        } else if (e.carta) {
+          div.onclick = abrirCarta;
+        } else {
+          // Pasa imagen o video según el objeto
+          const recurso = e.video ? e.video : e.imagen;
+          div.onclick = () => mostrarMensaje(e.texto, recurso);
+        }
+        contenedor.appendChild(div);
+      });
+    }
+
+    // ===== Chat de viewers =====
+    function agregarMensaje(usuario, texto) {
+      const cont = document.getElementById('mensajes');
+      if (!cont) return;
+      const msg = document.createElement("div");
+      msg.className = "msg";
+      msg.innerHTML = `<span class="usuario">${usuario}:</span> ${texto}`;
+      cont.appendChild(msg);
+      cont.scrollTop = cont.scrollHeight; // auto-scroll
+    }
+
+    // Enviar mensaje manual (tú)
+    function enviarMensaje() {
+      const input = document.getElementById('inputChat');
+      if (!input) return;
+      const texto = input.value.trim();
+      if (texto !== "") {
+        agregarMensaje("👤 Tú", texto);
+        input.value = "";
+        // Respuesta automática de viewers tras tu mensaje
+        setTimeout(() => lanzarViewerMensaje(), 900);
+      }
+    }
+
+    // Lanzar una reacción de viewers (aleatoria)
+    function lanzarViewerMensaje() {
+      const r = respuestasViewer[Math.floor(Math.random() * respuestasViewer.length)];
+      agregarMensaje("👥 Viewer", r);
+    }
+
+    // Eventos del chat y carta
+    const btnEnviar = document.getElementById('btnEnviar');
+    const inputChat = document.getElementById('inputChat');
+    if (btnEnviar) btnEnviar.addEventListener('click', enviarMensaje);
+    if (inputChat) {
+      inputChat.addEventListener('keydown', (e) => { if (e.key === 'Enter') enviarMensaje(); });
+    }
+    const overlay = document.getElementById('overlay');
+    const cerrarCartaBtn = document.getElementById('cerrarCarta');
+    if (overlay) overlay.addEventListener('click', cerrarCarta);
+    if (cerrarCartaBtn) cerrarCartaBtn.addEventListener('click', cerrarCarta);
+  </script>
+</body>
+</html>
+
